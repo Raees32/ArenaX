@@ -4,6 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 
 
 const Policy = ({ navigation }) => {
+  
+ // This function should be called on a button press or any other event
+  
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -78,7 +81,9 @@ const Policy = ({ navigation }) => {
         <Text style={styles.bold}>
           We have a zero tolerance policy for cheating and abusive behavior.
         </Text>
+       
       </View>
+      
     </ScrollView>
   );
 };

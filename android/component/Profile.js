@@ -4,11 +4,13 @@ import ImagePicker from 'react-native-image-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
+
 const Profile = ({navigation}) => {
  
   const navigateToWallet = () => {
     navigation.navigate('Wallet'); // Navigate to the Wallet screen
   };
+ 
 
   const [avatarSource, setAvatarSource] = useState(null);
   const handleJoinMatchRule = () => {
