@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList,SafeAreaView } from 'react-native';
-// import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 const data = [
@@ -106,6 +106,11 @@ const Home = ({ navigation }) => {
             data={data}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
+           
+// Function to open PUBG Mobile (replace 'pubgmobile://' with the correct deep link)
+
+// Call the function when you want to open PUBG Mobile
+
         />
         </SafeAreaView>
     );

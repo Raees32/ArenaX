@@ -10,6 +10,8 @@ const Profile = ({navigation}) => {
   const navigateToWallet = () => {
     navigation.navigate('Wallet'); // Navigate to the Wallet screen
   };
+  
+  
  
 
   const [avatarSource, setAvatarSource] = useState(null);
@@ -103,6 +105,13 @@ const Profile = ({navigation}) => {
   onPress={() => navigation.navigate('Policy')} // Navigate to the Policy screen
 >
   <Text style={styles.inputtxt}>Privacy Policy</Text>
+</TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.touchableItem}
+  onPress={() => navigation.navigate('AdHome')} // Navigate to the Policy screen
+>
+  <Text style={styles.inputtxt}>try</Text>
 </TouchableOpacity>
       </View>
    

@@ -12,9 +12,6 @@ import {
 import { GoogleSignin,  } from '@react-native-community/google-signin';
 import { ScrollView } from 'react-native-gesture-handler';
 
-// GoogleSignin.configure({
-//   webClientId: '284529224689-9i85led4i1kjoj0b945qdl7eractbecp.apps.googleusercontent.com',
-// });
 
 const SignInScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -23,52 +20,9 @@ const SignInScreen = ({ navigation }) => {
 
   const handleSignIn = async () => 
    {
-  //   try {
-  //     const emailSignInResponse = await fetch('http://localhost:3000/signIn', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         name,
-  //         email,
-  //         password,
-  //       }),
-  //     });
 
-  //     const emailSignInData = await emailSignInResponse.json();
-
-  //     if (emailSignInData.success) {
-  //       // Assuming you have a setUserIsSignedIn function
-  //       setUserIsSignedIn(true);
-  //       navigation.navigate('Tabs');
-  //       return;
-  //     }
-
-  //        // Your Google Sign-In logic here
-  //        await GoogleSignin.hasPlayServices();
-  //        const userInfo = await GoogleSignin.signIn();
-  //        const googleSignInResponse = await fetch('http://localhost:3000/googleSignIn', {
-  //          method: 'POST',
-  //          headers: {
-  //            'Content-Type': 'application/json',
-  //          },
-  //          body: JSON.stringify({
-  //            idToken: userInfo.idToken,
-  //          }),
-  //        });
-   
-  //        const googleSignInData = await googleSignInResponse.json();
-   
-  //        if (googleSignInData.success) {
-  //          setUserIsSignedIn(true); // Ensure setUserIsSignedIn is defined
            navigation.navigate('Tabs');
-  //        } else {
-  //          console.error(googleSignInData.error);
-  //        }
-  //      } catch (error) {
-  //        console.error(error);
-  //      }
+ 
      };
      const handleSignup  = async () => 
      {
@@ -81,31 +35,7 @@ const SignInScreen = ({ navigation }) => {
 
 
      const handleGoogleSignIn = async () => {
-      // try {
-      //   await GoogleSignin.hasPlayServices();
-      //   const userInfo = await GoogleSignin.signIn(); // Add an empty object {} here
-      //   const response = await fetch('http://localhost:3000/googleSignIn', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({
-      //       idToken: userInfo.idToken,
-      //     }),
-      //   });
-    
-      //   const responseData = await response.json();
-    
-      //   if (responseData.success) {
-      //     // Assuming you have a setUserIsSignedIn function
-      //     setUserIsSignedIn(true);
-      //     navigation.navigate('Tabs');
-      //   } else {
-      //     console.error(responseData.error);
-      //   }
-      // } catch (error) {
-      //   console.error(error);
-      // }
+      
     };
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
