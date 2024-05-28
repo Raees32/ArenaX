@@ -1,126 +1,180 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { GoogleSignin,  } from '@react-native-community/google-signin';
+import React, { useState , useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, Alert, } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import axios from 'axios';
+import Icon from 'react-native-vector-icons/Entypo';
+import Video from 'react-native-video';
+import Sound from 'react-native-sound';
 
+
+const backgroundSound = new Sound('song.mp3', Sound.MAIN_BUNDLE, (error) => {
+  if (error) {
+    console.log('Failed to load the sound', error);
+    return;
+  }
+  // Play the sound
+  backgroundSound.setNumberOfLoops(-1); // -1 for infinite loop
+});
 
 const SignInScreen = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  
 
-  const handleSignIn = async () => 
-   {
+    
+  useEffect(() => {
+    // Start playing the background sound when the component mounts
+    backgroundSound.play();
 
-           navigation.navigate('Tabs');
- 
-     };
-     const handleSignup  = async () => 
-     {
-
-
-
-      navigation.navigate('SignUp');
-     };
-
-
-
-     const handleGoogleSignIn = async () => {
-      
+    // Stop and release the background sound when the component unmounts
+    return () => {
+      backgroundSound.stop();
+      backgroundSound.release();
     };
+  }, []);
+
+
+
+
+  const handleSignIn = async () => {
+    try {
+      const response = await axios.post('https://tournament-backend-api.azurewebsites.net/signin', {
+        username,
+        password
+      });
+      console.log('Sign-in response:', response.data);
+      if (response.status === 200) {
+        const data = response.data;
+        if (data && data.user) {
+          if (data.user.isAdmin) {
+            navigation.navigate('Admin');
+          } else {
+            navigation.navigate('Tabs');
+          }
+          
+        } else {
+          throw new Error('Invalid response from server');
+        }
+      } else {
+        throw new Error('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Sign-in error:', error.message);
+      Alert.alert('Error', error.message);
+    }
+    finally {
+      // Stop the background sound when sign-in is attempted (whether successful or not)
+      backgroundSound.stop();
+    }
+  };
+
+  const handleSignup = async () => {
+    navigation.navigate('SignUp');
+  };
+
+  const handleAdminLogin = () => {
+    navigation.navigate('Admin');
+  };
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+       <Video
+        source={require('./video/h4.mp4')} // Change this path to your video file
+        style={StyleSheet.absoluteFillObject}
+        resizeMode="cover"
+        repeat
+        muted
+      />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>                                                                                                                     
-          <Image source={require('../component/logo1.jpg')} style={styles.logo} />
+     
+
+        <View style={styles.container}>
+         
           <Text style={styles.title}>Login</Text>
           <Text style={styles.undertitle}>Please Sign in to Continue.</Text>
+
           <TextInput
-            placeholder="Name"
             style={styles.input}
-            value={name}
-            onChangeText={(text) => setName(text)}
+            placeholder="Username"
+            placeholderTextColor="#fff"
+            value={username}
+            onChangeText={(text) => setUsername(text)}
           />
           <TextInput
-            placeholder="Email"
             style={styles.input}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-          <TextInput
             placeholder="Password"
-            style={styles.input}
+            placeholderTextColor="#fff"
             value={password}
             onChangeText={(text) => setPassword(text)}
             secureTextEntry
           />
-         <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-  <Text style={styles.buttonText}>Login</Text>
-</TouchableOpacity>
-
-{/* Add some space between the buttons */}
-
-
-<TouchableOpacity style={styles.button} onPress={handleSignup}>
-  <Text style={styles.buttonText}>Sign Up</Text>
-</TouchableOpacity>
-          <Text style={styles.Ortxt}>OR</Text>
-          <TouchableOpacity style={styles.googleSignInButton} onPress={handleGoogleSignIn}>
-            <Image source={require('./Images/gogl.png')} style={styles.googleSignInImage} />
-            <Text style={styles.googleSignInText}>Sign in with Google</Text>
+          <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+            <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
+          <Image source={require('../component/logo1.jpg')} style={styles.logoadmin} />
+          <TouchableOpacity style={styles.buttons} onPress={handleAdminLogin}>
+            <Text style={styles.buttonTextss}>Admin</Text>
+          </TouchableOpacity>
+          <Icon name="arrow-down" style={styles.icon} />
+          <View style={styles.signupContainer}>
+            <Text style={styles.new}>Don't have an account?</Text>
+            <TouchableOpacity style={styles.arrowContainer} onPress={handleSignup}>
+              <Text style={styles.buttonTexts}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000',
+    
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   undertitle: {
-    color: '#ffff',
-    marginBottom: 20,
-    marginRight: 124,
-    fontSize: 18,
-   
+    color: '#fff',
+    marginBottom: 30,
+    marginRight: 5,
+    fontSize: 23,
+    fontWeight:'bold',
+    
+  
+    
   },
   title: {
-    fontSize: 43,
-   color: '#ffff',
+    fontSize: 55,
+    color: '#ffff',
     textShadowColor: 'rgba(0, 0, 0, 0.115)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
-    marginRight: 230,
-    marginBottom: 7,
+    marginRight: 190,
     fontWeight: 'bold',
-    marginTop: 5,
-    fontFamily:'sans-serif'
-   
+    fontFamily: 'sans-serif',
+   bottom:40,
+    left:40,
+    marginTop:30
   },
   input: {
-    width: '80%',
-    height: 42,
+    width: '82%',
+    height: 44,
     borderWidth: 1,
-    borderColor: '#fff',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+
     borderRadius: 20,
     paddingHorizontal: 12,
     marginBottom: 14,
-    backgroundColor: '#fff',
-    color: '#000000',
-   
+    color: 'white',
+    margin: 10,
+    top: 35,
+    backgroundColor: '#000000'
   },
   button: {
     backgroundColor: '#ff0000',
@@ -129,63 +183,75 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 27,
-    marginTop: 9,
+    top: 65,
     marginBottom: 8,
-   
+  },
+  buttons:{
+   left: 98,
+  color:'#fff',
+  fontSize: 15,
+  },
+  buttonTextss:{
+fontSize: 15,
+color:'#fff',
+left: 36,
+top:126
+
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 25,
-  },
-  
 
-loginText: {
+  },
+  loginText: {
     color: '#ffff',
     fontSize: 18,
-   
+  
   },
-   logo: {
-    width: 250, // Adjust the width as needed
-    height: 200, // Adjust the height as needed
-    marginTop:4, // Add space between the logo and the title
+  logo: {
+    width: 250,
+    height: 200,
+    top: 40,
   },
-  goglButton: {
-    alignItems: 'center',
-    
-   // Adjust the space between "Login" button and "Sign in with Google" button
+  new: {
+    color: '#ffff',
+    fontSize: 18,
+    right:23,
   },
- Ortxt:{
-    color:'#fff',
-    fontSize: 16,
-    fontWeight:'bold',
-    marginBottom:5,
-  },
-  googleSignInButton: {
+  signupContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 5,
-    width: '90%',
-    height: 45,
-    alignSelf: 'center',
-    backgroundColor: '#ff0', // Customize the background color
-    borderRadius: 27,
+   top:103
   },
-
-  googleSignInImage: {
-    width: 25, // Adjust the width of the Google image as needed
-    height: 20, // Adjust the height of the Google image as needed
+  arrowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonTexts: {
+  fontWeight: 'bold',
+    fontSize: 22,
     marginRight: 10,
+    color: '#ff0',
+    right:23,
   },
-
-  googleSignInText: {
-    color: '#ff0000', // Customize the text color
-    fontWeight: 'bold',
-    fontSize: 18,
+  icon: {
+    color: '#ff0000',
+    fontSize: 40,
+    top: 40
+    
   },
+  logoadmin:{
+    width: 55,
+    height: 55,
+    top: 205,
+   left: 136,
+   borderRadius:50
+  },
+  
+ 
+ 
 });
-
 
 export default SignInScreen;
 
@@ -198,171 +264,177 @@ export default SignInScreen;
 
 
 
-
-
-
-
-
-
-
-
-
 // import React, { useState } from 'react';
-// import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-// import axios from 'axios';
+// import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform ,Alert} from 'react-native';
+// import { ScrollView } from 'react-native-gesture-handler';
+// import axios from 'axios'; // Import Axios here
+// import Icon from 'react-native-vector-icons/Entypo';
 
 // const SignInScreen = ({ navigation }) => {
 //   const [email, setEmail] = useState('');
 //   const [password, setPassword] = useState('');
 
-//   const handleSignIn = () => {
-//     // Implement your sign-in logic here
-//     // For this example, navigate to the "Home" tab instead of "Home" screen
-   
-//     navigation.navigate('Tabs');
+//   const handleSignIn = async () => {
+//     try {
+//       const response = await axios.post('http://172.27.48.1:3000/signin', {
+//         email,
+//         password
+//       });
+  
+//       if (response.status === 200) {
+//         const data = response.data;
+//         if (data && data.user) {
+//           navigation.navigate('Tabs'); // Navigate to Tabs after successful sign-in
+//         } else {
+//           throw new Error('Invalid response from server');
+//         }
+//       } else {
+//         throw new Error('Invalid credentials');
+//       }
+//     } catch (error) {
+//       Alert.alert('Error', error.message);
+//     }
 //   };
-
-//   const handleGoogleSignIn = () =>{
-
+//   const handleSignup = async () => {
+//     navigation.navigate('SignUp');
 //   };
 
 //   return (
-//     <View style={styles.container}>
-//       <Image
-//         source={require('../component/logo1.jpg')} // Replace with the path to your logo image
-//         style={styles.logo}
-//       />
-//       <Text style={styles.title}>Login</Text>
-//       <Text style={styles.undertitle}>Please Sign in to Continues.</Text>
-//       <TextInput
-//         placeholder="Email"
-//         style={styles.input}
-//         value={email}
-//         onChangeText={(text) => setEmail(text)}
-//       />
-//       <TextInput
-//         placeholder="Password"
-//         style={styles.input}
-//         value={password}
-//         onChangeText={(text) => setPassword(text)}
-//         secureTextEntry
-//       />
-//       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-//         <Text style={styles.buttonText}>Login</Text>
-       
-//       </TouchableOpacity>
-//       <Text style={styles.Ortxt}>OR</Text>
-//       <TouchableOpacity style={styles.goglButton} onPress={handleGoogleSignIn}>
-//         <View style={styles.goglButtonContent}>
-//           <Image
-//             source={require('./Images/gogl.png')} // Replace with the path to your Google logo image
-//             style={styles.goglLogo}
+//     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+//       <ScrollView contentContainerStyle={styles.scrollContainer}>
+//         <View style={styles.container}>
+//           <Image source={require('../component/logo1.jpg')} style={styles.logo} />
+//           <Text style={styles.title}>Login</Text>
+//           <Text style={styles.undertitle}>Please Sign in to Continue.</Text>
+
+//           <TextInput
+//             style={styles.input}
+//             placeholder="Email"
+
+//             value={email}
+//             onChangeText={(text) => setEmail(text)}
 //           />
-//           <Text style={styles.goglButtonText}>Sign in with Google</Text>
+//           <TextInput
+//             style={styles.input}
+//             placeholder="Password"
+
+//             value={password}
+//             onChangeText={(text) => setPassword(text)}
+//             secureTextEntry
+//           />
+//           <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+//             <Text style={styles.buttonText}>Login</Text>
+//           </TouchableOpacity>
+//           <Icon name="arrow-down" style={styles.icon} />
+//           {/* Parent view for "Don't have an account?" text and "Sign Up" button */}
+//           <View style={styles.signupContainer}>
+
+//             <Text style={styles.new}>Don't have an account?</Text>
+//             <TouchableOpacity style={styles.arrowContainer} onPress={handleSignup}>
+
+//               <Text style={styles.buttonTexts}>Sign Up</Text>
+
+//             </TouchableOpacity>
+//           </View>
 //         </View>
-//       </TouchableOpacity>
-     
-//     </View>
+//       </ScrollView>
+//     </KeyboardAvoidingView>
 //   );
 // };
+
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
 //     justifyContent: 'center',
 //     alignItems: 'center',
 //     backgroundColor: '#000000',
+
 //   },
 //   undertitle: {
 //     color: '#ffff',
 //     marginBottom: 20,
-//     marginRight: 124,
+//     marginRight: 110,
 //     fontSize: 18,
-   
+//     top: 40
+
 //   },
 //   title: {
 //     fontSize: 43,
-//    color: '#ffff',
+//     color: '#ffff',
 //     textShadowColor: 'rgba(0, 0, 0, 0.115)',
 //     textShadowOffset: { width: 1, height: 1 },
 //     textShadowRadius: 3,
-//     marginRight: 230,
-//     marginBottom: 13,
+//     marginRight: 210,
+//     top: 20,
 //     fontWeight: 'bold',
-//     marginTop: 17,
-//     fontFamily:'sans-serif'
-   
+//     marginTop: 10,
+//     fontFamily: 'sans-serif',
 //   },
 //   input: {
 //     width: '80%',
-//     height: 45,
+//     height: 42,
 //     borderWidth: 1,
 //     borderColor: '#fff',
 //     borderRadius: 20,
 //     paddingHorizontal: 12,
-//     marginBottom: 17,
-//     backgroundColor: '#fff',
-//     color: '#000000',
-   
+//     marginBottom: 14,
+//     color: 'white',
+//     margin: 10,
+//     top: 35,
+//     backgroundColor: 'black'
+
 //   },
 //   button: {
 //     backgroundColor: '#ff0000',
-//     width: '44%',
-//     height: 57,
+//     width: '45%',
+//     height: 40,
 //     justifyContent: 'center',
 //     alignItems: 'center',
 //     borderRadius: 27,
-//     marginTop: 17,
-//     marginBottom: 20,
-   
+//     top: 55,
+//     marginBottom: 8,
 //   },
 //   buttonText: {
 //     color: 'white',
 //     fontWeight: 'bold',
-//     fontSize: 28,
-//   },
-  
+//     fontSize: 25,
 
-// loginText: {
+
+
+//   },
+//   loginText: {
 //     color: '#ffff',
 //     fontSize: 18,
-   
 //   },
-//    logo: {
-//     width: 250, // Adjust the width as needed
-//     height: 200, // Adjust the height as needed
-//     marginTop:68 // Add space between the logo and the title
+//   logo: {
+//     width: 250,
+//     height: 200,
+//     top: 40,
 //   },
-//   goglButton: {
-//     alignItems: 'center',
-//     marginTop: 19,
-//    // Adjust the space between "Login" button and "Sign in with Google" button
+//   new: {
+//     color: '#ffff',
+//     fontSize: 18,
 //   },
-//   goglButtonContent: {
+//   signupContainer: {
 //     flexDirection: 'row',
 //     alignItems: 'center',
-//      // Border color
-//     borderWidth: 2, // Border width
-//     borderRadius: 30,
-//     padding: 11,
-//     marginBottom:100,
-//     backgroundColor:'#dcdcdc',
-    
-   
+//     marginTop: 120,
 //   },
-//   goglLogo: {
-//     width: 27, // Adjust the width as needed
-//     height: 28, // Adjust the height as needed
-//     marginRight: 10, // Adjust the space between the Google logo and text
+//   arrowContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
 //   },
-//   goglButtonText: {
-//     color: '#ff0000',
-//     fontSize: 16,
-//     fontWeight:'bold' // Adjust the font size as needed
+//   buttonTexts: {
+//     color: 'blue',
+//     fontWeight: 'bold',
+//     fontSize: 25,
+//     marginRight: 10,
 //   },
-//   Ortxt:{
-//     color:'#fff',
-//     fontSize: 19,
-//     fontWeight:'bold'
-//   }
+//   icon: {
+//     color: '#ffffff',
+//     fontSize: 30,
+//     top: 70,
+//   },
 // });
+
 // export default SignInScreen;

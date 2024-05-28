@@ -1,47 +1,70 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet,  Alert } from 'react-native';
+import axios from 'axios';
+import Video from 'react-native-video';
 const SignUpScreen = ({ navigation }) => {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
 
-  const handleSignUp = () => {
-    // Implement your sign-up logic here
-    // You would typically send a request to your server to create a new user
-    // You can use a library like axios to make API requests
-    navigation.navigate('Tabs');
+  const handleSignUp = async () => {
+    try {
+      const response = await axios.post('https://tournament-backend-api.azurewebsites.net/signup', {
+        username,
+        email,
+        phone,
+        password
+      });
+
+      if (response.status === 201) {
+        // Successful sign-up, navigate to SignIn instead of Tabs
+        navigation.navigate('SignIn');
+      } else {
+        throw new Error('Failed to sign up');
+      }
+    } catch (error) {
+      console.error('Error during sign up:', error);
+      Alert.alert('Error', 'Failed to sign up: ' + error.message);
+    }
   };
 
   return (
-    
     <View style={styles.container}>
+       <Video
+       source={require('./video/h4.mp4')} // Change this path to your video file
+        style={StyleSheet.absoluteFillObject}
+        resizeMode="cover"
+        repeat
+        muted
+      />
       <Text style={styles.title}>Create Account</Text>
       <Text style={styles.undertitle}>Please Fill The Input Below Here</Text>
       <TextInput
-        placeholder="Name"
         style={styles.input}
-        value={name}
-        onChangeText={(text) => setName(text)}
+        placeholder="Username"
+        placeholderTextColor="#fff"
+        value={username}
+        onChangeText={(text) => setUsername(text)}
       />
-
       <TextInput
-        placeholder="Email"
         style={styles.input}
+        placeholder="Email"
+        placeholderTextColor="#fff"
         value={email}
         onChangeText={(text) => setEmail(text)}
       />
-
-<TextInput
-        placeholder="Number"
+      <TextInput
         style={styles.input}
+        placeholder="Number"
+        placeholderTextColor="#fff"
         value={phone}
         onChangeText={(text) => setPhone(text)}
       />
-
       <TextInput
-        placeholder="Password"
         style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#fff"
         value={password}
         onChangeText={(text) => setPassword(text)}
         secureTextEntry
@@ -50,7 +73,7 @@ const SignUpScreen = ({ navigation }) => {
         style={styles.button}
         onPress={handleSignUp}
       >
-        <Text style={styles.buttonText}>Login</Text>
+        <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
       <Text style={styles.loginText}>
         Already have an account?{' '}
@@ -61,7 +84,6 @@ const SignUpScreen = ({ navigation }) => {
           Sign In
         </Text>
       </Text>
-      
     </View>
   );
 };
@@ -72,26 +94,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
    
-    backgroundColor: '#000000',
+   
     
   },
   title: {
     fontSize: 39,
-    marginRight: 90,
-    marginTop:130,
+    marginRight: 60,
+    marginTop:120,
     color:'#fff',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
-    marginVertical: 9,
-    fontFamily: 'sans-serif',
+    textShadowRadius: 7,
+   fontFamily: 'sans-serif',
+    bottom:20,
+    left: 20
 
   },
   undertitle:{
     marginBottom: 60,
-    marginRight:90,
-    fontSize: 18,
-    color:'#fff'
+    marginRight:60,
+    fontSize: 17,
+    color:'#fff',
+    left: 20
+    
   },
 
 
@@ -99,12 +124,13 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 45,
     borderWidth: 1,
-    borderColor: '#ffff',
-    borderRadius: 23,
+   borderRadius: 20,
     paddingHorizontal: 12,
     marginBottom: 15,
-    backgroundColor: '#fff',
-    color: '#ffff'
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+
+    color: '#ffff',
+    margin:5
   
     
   },
@@ -116,7 +142,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 27,
     marginVertical:27,
-    marginBottom:50,
+    marginBottom:40,
+    top: 10
     // Change the border radius here
   },
   buttonText: {
@@ -131,12 +158,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 19,
     paddingTop:5,
-    marginBottom: 120,
+    marginBottom: 110,
+    top:38
     
   },
   linkText: {
-    color: '#ff0000',
-    fontSize: 22,
+    color: '#fff000',
+    fontSize: 26,
+    fontWeight:'bold'
   },
 
   

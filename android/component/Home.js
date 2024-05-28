@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList,SafeAreaView } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+
+
 
 const data = [
     {
@@ -116,7 +116,7 @@ const Home = ({ navigation }) => {
     );
 };
 
-const Stack = createStackNavigator();
+
 
 
 const styles = StyleSheet.create({
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
      backgroundColor: '#000000',
     },
     img: {
-        width: 360,
+        width: 310,
         height: 240,
        borderWidth: 2,
         borderColor:'#fff',
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
         
     },
     infoContainer: {
-        marginTop:7,
+        marginTop:5,
     },
     row: {
         flexDirection: 'row',

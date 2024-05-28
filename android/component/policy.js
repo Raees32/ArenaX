@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text,ScrollView, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text,ScrollView, StyleSheet,  } from 'react-native';
 
 
-const Policy = ({ navigation }) => {
+
+const Policy = () => {
   
  // This function should be called on a button press or any other event
   
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingBottom: 20,
+    backgroundColor:'#000000'
   },
   main: {
     fontSize: 19,

@@ -3,8 +3,7 @@ import WalletScreen from './waleet';
 import { createStackNavigator } from '@react-navigation/stack';
 import Profile from './Profile';
 import Policy from './policy';
-import AdHome from './new';
-import Upload from './admin';
+
 
 // Import the Policy component
 
@@ -34,11 +33,7 @@ const ProfileStack = () => {
             headerShown: false,
         }}
       />
-       <ProfileStack.Screen
-        name="Upload"
-        component={Upload} // Use the AdHome component here
-        options={{ headerShown: false, }}
-      />
+      
      
      
     </ProfileStack.Navigator>

@@ -1,147 +1,146 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList,SafeAreaView } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import Video from 'react-native-video';
 
-const data = [
-    {
-        id: '1',
-        Winner: 'Pubg id 1',
-        MatchNo: 'Mo - 01',
-        Date: '20/06/2023',
-        Map: 'Erangel',
-        Prize: 2500,
-    },
-    {
-        id: '2',
-        Winner: 'Pubg id 2',
-        MatchNo: 'Mo - 02',
-        Date: '22/06/2023',
-        Map: 'Erangel',
-        Prize: 3000,
-    },
-    {
-        id: '3',
-        Winner: 'Pubg id 3',
-        MatchNo: 'Mo - 03',
-        Date: '07/06/2023',
-        Map: 'Erangel',
-        Prize: 3500,
-    },
-    {
-        id: '4',
-        Winner: 'Pubg id 4',
-        MatchNo: 'Mo - 04',
-        Date: '10/06/2023',
-        Map: 'Erangel',
-        Prize: 4000,
-    },
-    // Add more data items as needed
-];
+const AnimatedButton = ({ title, onPress }) => {
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
+      <Text style={styles.buttonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+};
 
-const Results = () => {
-    const renderItem = ({ item }) => (
-        <View style={styles.tournamentContainer}>
-            <Text style={styles.label}>Winner: {item.Winner}</Text>
-            <View style={styles.row}>
-                <View style={[styles.column, styles.borderRight]}>
-                    <Text style={styles.label}>Match No:</Text>
-                    <Text style={styles.value}>{item.MatchNo}</Text>
-                </View>
-                <View style={styles.column}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text style={styles.value}>{item.Date}</Text>
-                </View>
-            </View>
-            <View style={styles.row}>
-                <View style={[styles.column, styles.borderRight]}>
-                    <Text style={styles.label}>Map:</Text>
-                    <Text style={styles.value}>{item.Map}</Text>
-                </View>
-                <View style={styles.column}>
-                    <Text style={styles.label}>Prize:</Text>
-                    <Text style={styles.value}>{item.Prize}</Text>
-                </View>
-            </View>
-        </View>
-    );
+const Results = ({ navigation }) => {
+  const blinkValue = useRef(new Animated.Value(0)).current;
 
-    return (
-        <SafeAreaView>
-        <FlatList
-       
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-        />
-        </SafeAreaView>
-    );
+  useEffect(() => {
+    const blinkAnimation = Animated.sequence([
+      Animated.timing(blinkValue, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(blinkValue, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]);
+
+    const blinkLoop = Animated.loop(blinkAnimation);
+
+    blinkLoop.start();
+
+    return () => {
+      blinkLoop.stop();
+    };
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Video
+        source={require('./video/result.mp4')}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode="cover"
+        repeat={true}
+        muted
+      />
+      <View style={styles.resultContainer}>
+        <Animated.Text style={[styles.resultText, { opacity: blinkValue }]}>
+          Result Announced..
+        </Animated.Text>
+      </View>
+      <AnimatedButton
+        title="PUBG Results"
+        onPress={() => navigation.navigate('Pubg Result')}
+      />
+      <AnimatedButton
+        title="FreeFire Results"
+        onPress={() => navigation.navigate('FreeFire Result')}
+      />
+      <AnimatedButton
+        title="Chess Results"
+        onPress={() => navigation.navigate('Chess Result')}
+      />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    tournamentContainer: {
-        marginVertical: 13,
-        margin: 25,
-        borderWidth: 1,
-        borderColor: '#dcdcdc',
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 20,
-        backgroundColor:'#000000'
-    
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-        paddingHorizontal: 10,
-        
-    },
-    column: {
-        flex: 1,
-        marginHorizontal: 5,
-        padding: 12,
-        color:'#fff'
-    // backgroundColor:''
-    },
-    label: {
-        fontSize: 18,
-        color: 'black',
-        fontWeight: 'bold',
-        padding: 6,
-        color:'#fff',
-       
-        backgroundColor:'#ff0000',
-        textAlign:'center',
-borderRadius:17,
-      
-        
-    },
-    value: {
-        fontSize: 16,
-        color: 'black',
-        color:'#fff',
-        textAlign:'center'
-    
-    },
-    borderRight: {
-        borderRightWidth: 1,
-        borderColor: '#000',
-        
-
-        
-    },
-
-    
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resultContainer: {
+    marginBottom: 20,
+  },
+  resultText: {
+    fontSize: 27,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    bottom:80
+  },
+  buttonContainer: {
+    backgroundColor: 'rgba(255, 0, 0, 0.5)', // Transparent red background
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginBottom: 15,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
 
 export default Results;
 
+// // Frontend code to fetch PUBG results based on room ID
+// import React, { useState, useEffect } from 'react';
+// import { View, Text, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+// import axios from 'axios';
 
+// const Results = () => {
+//     const [pubgResults, setPUBGResults] = useState([]);
 
+//     useEffect(() => {
+//         fetchPUBGResults();
+//     }, []);
 
+//     const fetchPUBGResults = async () => {
+//         try {
+//             const response = await axios.get('http://your-backend-url/api/pubg-results/your-room-id');
+//             setPUBGResults(response.data);
+//         } catch (error) {
+//             console.error('Error fetching PUBG results:', error);
+//         }
+//     };
 
+//     // Render PUBG results
+//     return (
+//         <SafeAreaView>
+//             <FlatList
+//                 data={pubgResults}
+//                 renderItem={({ item }) => (
+//                     <View style={styles.tournamentContainer}>
+//                         <Text style={styles.label}>Winner: {item.Winner}</Text>
+//                         {/* Render other PUBG result details */}
+//                     </View>
+//                 )}
+//                 keyExtractor={(item) => item.id}
+//             />
+//         </SafeAreaView>
+//     );
+// };
 
+// // Styles
+// const styles = StyleSheet.create({
+//     // Define your styles here
+// });
 
-
-
-
-
+// export default Results;
+// Replace 'http://your-backend-url/api/pubg-results/your-room-id' with the actual URL of your backend API endpoint to fetch PUBG results, and replace 'your-room-id' with the actual room ID provided by the user.
